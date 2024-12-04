@@ -7,6 +7,8 @@ const swaggerJsDoc = require('swagger-jsdoc');
 
 // Get the client
 const mysql = require('mysql2/promise');
+const { Server } = require('http');
+const { url } = require('inspector');
 
 const app = express();
 const port = process.env.PORT || 8082;
@@ -40,7 +42,8 @@ const swaggerOptions = {
             title: 'API Armas de Fuego',
             version: '1.0.0',
         },
-        servers: [{ url: `http://localhost:${port}` }],
+        //servers: [{ url: `http://localhost:${port}` }],
+        server: [ {url: `https://api-rest-fgqq.onrender.com` }]
     },
     apis: [`${path.join(__dirname, 'index.js')}`],
 };

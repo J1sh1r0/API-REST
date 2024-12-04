@@ -3,33 +3,22 @@ const path = require('path');
 const cors = require('cors');
 const swaggerUI = require('swagger-ui-express');
 const swaggerJsDoc = require('swagger-jsdoc');
-const sql = require('mssql'); // Importa el paquete para interactuar con SQL Server
+//const sql = require('mssql'); // Importa el paquete para interactuar con SQL Server
+
+// Get the client
+const mysql = require('mysql2/promise');
 
 const app = express();
 const port = process.env.PORT || 8082;
 
 // Configuración de la base de datos con autenticación integrada de Windows
-const dbConfig = {
-    server: 'localhost', // Nombre del servidor SQL (puedes usar 'localhost' si está en tu máquina local)
-    database: 'ArmasDB',  // Nombre de la base de datos
-    options: {
-        encrypt: true, // Si es necesario, habilitar el cifrado (útil en Azure o para seguridad)
-        trustServerCertificate: true, // Usar cuando trabajas localmente y no tienes problemas con certificados
-    },
-    authentication: {
-        type: 'ntlm', // Autenticación integrada de Windows
-        options: {
-            domain: '', // Deja vacío si no estás en un dominio
-            userName: '', // Deja vacío (usará tu usuario de Windows)
-            password: '', // Deja vacío
-        },
-    },
-};
+//
 
 // Conectar a la base de datos
 async function connectToDatabase() {
     try {
-        await sql.connect(dbConfig); // Conecta con la base de datos usando la configuración
+const connection = await mysql.createConnection('mysql://root:gFBoHnyNvJoOkUqOLWqyNhtopvxayYid@junction.proxy.rlwy.net:41620/railway');
+// await sql.connect(dbConfig); // Conecta con la base de datos usando la configuración
         console.log('Conectado a la base de datos');
     } catch (err) {
         console.error('Error al conectar a la base de datos:', err);

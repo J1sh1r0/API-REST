@@ -3,7 +3,7 @@ const path = require('path');
 const cors = require('cors');
 const swaggerUI = require('swagger-ui-express');
 const swaggerJsDoc = require('swagger-jsdoc');
-const mysql = require('mysql2/promise'); // Importamos mysql2 para MySQL
+const mysql = require('mysql2/promise'); // Usamos mysql2 para MySQL
 
 const app = express();
 const port = process.env.PORT || 8082;
@@ -84,7 +84,7 @@ app.get('/api-spec', (req, res) => {
  */
 app.get('/armas', async (req, res) => {
   try {
-    const [rows] = await connection.execute('SELECT * FROM Armas');
+    const [rows] = await connection.query('SELECT * FROM Armas'); // Consulta usando mysql2
     res.json(rows); // Devuelve las armas en formato JSON
   } catch (err) {
     console.error(err);
@@ -128,7 +128,7 @@ app.get('/armas', async (req, res) => {
 app.get('/armas/:id', async (req, res) => {
   const { id } = req.params;
   try {
-    const [rows] = await connection.execute('SELECT * FROM Armas WHERE id = ?', [id]);
+    const [rows] = await connection.query('SELECT * FROM Armas WHERE id = ?', [id]); // Uso de parámetros
     if (rows.length === 0) {
       return res.status(404).json({ message: 'Arma no encontrada' });
     }
@@ -168,9 +168,9 @@ app.get('/armas/:id', async (req, res) => {
 app.post('/armas', async (req, res) => {
   const { nombre, calibre, tipo, pais_origen } = req.body;
   try {
-    await connection.execute(
-      `INSERT INTO Armas (nombre, calibre, tipo, pais_origen) VALUES (?, ?, ?, ?)`,
-      [nombre, calibre, tipo, pais_origen]
+    await connection.query(
+      'INSERT INTO Armas (nombre, calibre, tipo, pais_origen) VALUES (?, ?, ?, ?)',
+      [nombre, calibre, tipo, pais_origen] // Uso de parámetros para evitar inyecciones SQL
     );
     res.status(201).json({ message: 'Arma creada exitosamente' });
   } catch (err) {
@@ -219,13 +219,13 @@ app.put('/armas/:id', async (req, res) => {
   const { nombre, calibre, tipo, pais_origen } = req.body;
 
   try {
-    const [rows] = await connection.execute('SELECT * FROM Armas WHERE id = ?', [id]);
+    const [rows] = await connection.query('SELECT * FROM Armas WHERE id = ?', [id]);
     if (rows.length === 0) {
       return res.status(404).json({ message: 'Arma no encontrada' });
     }
 
-    await connection.execute(
-      `UPDATE Armas SET nombre = ?, calibre = ?, tipo = ?, pais_origen = ? WHERE id = ?`,
+    await connection.query(
+      'UPDATE Armas SET nombre = ?, calibre = ?, tipo = ?, pais_origen = ? WHERE id = ?',
       [nombre, calibre, tipo, pais_origen, id]
     );
     res.json({ message: 'Arma actualizada exitosamente' });
@@ -273,7 +273,7 @@ app.patch('/armas/:id', async (req, res) => {
   const { nombre, calibre, tipo, pais_origen } = req.body;
 
   try {
-    const [rows] = await connection.execute('SELECT * FROM Armas WHERE id = ?', [id]);
+    const [rows] = await connection.query('SELECT * FROM Armas WHERE id = ?', [id]);
     if (rows.length === 0) {
       return res.status(404).json({ message: 'Arma no encontrada' });
     }
@@ -297,13 +297,9 @@ app.patch('/armas/:id', async (req, res) => {
       updates.push('pais_origen = ?');
       params.push(pais_origen);
     }
-    
-    params.push(id);  // Agregamos el ID al final para la cláusula WHERE
 
-    await connection.execute(
-      `UPDATE Armas SET ${updates.join(', ')} WHERE id = ?`,
-      params
-    );
+    params.push(id);
+    await connection.query(`UPDATE Armas SET ${updates.join(', ')} WHERE id = ?`, params);
     res.json({ message: 'Arma parcialmente actualizada exitosamente' });
   } catch (err) {
     console.error(err);

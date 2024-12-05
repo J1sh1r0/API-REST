@@ -41,38 +41,55 @@ const swaggerOptions = {
     definition: {
       openapi: '3.0.0',
       info: {
-        title: 'Gestión de Armas de Fuego API', // Cambia el título
-        description: 'API para gestionar armas de fuego en un sistema automatizado de inventario y control.', // Cambia la descripción
+        title: 'Gestión de Armas de Fuego API',
+        description: 'API para gestionar armas de fuego en un sistema automatizado de inventario y control.',
         version: '1.0.0',
       },
-      server: [{ url: `https://api-rest-fgqq.onrender.com` }], // Cambia la URL si es necesario
+      server: [{ url: `https://api-rest-fgqq.onrender.com` }],
     },
     apis: [`${path.join(__dirname, 'index.js')}`],
-};
-
-const swaggerDocs = swaggerJsDoc(swaggerOptions);////////////////////////
-
-// Leer el README.md y mostrarlo en la documentación
-const readmeContent = fs.readFileSync(path.join(__dirname, 'README.md'), 'utf-8');
-
-const customCss = `
-  .swagger-ui .topbar {
-    background-color: #4CAF50; /* Color de fondo de la barra superior */
-  }
-  .swagger-ui .info {
-    color: #FF5722; /* Color del texto del título */
-  }
-`;
-// Configuración para mostrar el README en Swagger
-app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocs, {
-    customCss: '.swagger-ui .topbar { background-color: #4CAF50; }', // Personaliza el color de la barra superior
+  };
+  
+  const swaggerDocs = swaggerJsDoc(swaggerOptions);
+  
+  // Leer el README.md y mostrarlo en la documentación
+  const readmeContent = fs.readFileSync(path.join(__dirname, 'README.md'), 'utf-8');
+  
+  // Estilo personalizado para Swagger UI
+  const customCss = `
+    .swagger-ui .topbar {
+      background-color: #4CAF50; /* Cambia el color de fondo de la barra superior */
+    }
+    .swagger-ui .info {
+      color: #FF5722; /* Cambia el color del texto del título */
+    }
+    .swagger-ui-readme {
+      padding: 20px;
+      background: #f7f7f7;
+      border: 1px solid #ddd;
+      margin-top: 30px;
+      border-radius: 5px;
+    }
+  `;
+  
+  // Configuración para mostrar el README en Swagger
+  app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocs, {
+    customCss: customCss, // Aplica el estilo personalizado
     customJs: `
       window.onload = function() {
-        // Agregar el contenido del README al body de Swagger
-        const readmeSection = document.createElement('div');
-        readmeSection.className = 'swagger-ui-readme';
-        readmeSection.innerHTML = \`<h2>Documentación del Proyecto</h2><pre>${readmeContent.replace(/\n/g, '<br>')}</pre>\`;
-        document.querySelector('.swagger-ui').insertBefore(readmeSection, document.querySelector('.swagger-ui .topbar'));
+        // Asegúrate de que Swagger UI esté completamente cargado antes de intentar modificar el DOM
+        setTimeout(function() {
+          const readmeSection = document.createElement('div');
+          readmeSection.className = 'swagger-ui-readme';
+          readmeSection.innerHTML = \`
+            <h2>Documentación del Proyecto</h2>
+            <pre>${readmeContent.replace(/\n/g, '<br>')}</pre>
+          \`;
+          const topbar = document.querySelector('.swagger-ui .topbar');
+          if (topbar) {
+            document.querySelector('.swagger-ui').insertBefore(readmeSection, topbar);
+          }
+        }, 1000); // Retrasa la ejecución para asegurar que Swagger se haya cargado
       };
     `, // Este código agrega el README debajo de la barra superior
   }));

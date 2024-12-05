@@ -108,8 +108,6 @@ app.get('/armas', async (req, res) => {
       res.status(500).json({ message: 'Error al obtener armas' });
     }
   });
-  
-  
 
 /**
  * @swagger

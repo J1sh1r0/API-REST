@@ -38,16 +38,17 @@ app.use(express.json()); // Permite recibir datos en formato JSON
 
 // Configuración de Swagger
 const swaggerOptions = {
-  definition: {
-    openapi: '3.0.0',
-    info: {
-      title: 'API Armas de Fuego',
-      version: '1.0.0',
+    definition: {
+      openapi: '3.0.0',
+      info: {
+        title: 'Gestión de Armas de Fuego API', // Cambia el título
+        description: 'API para gestionar armas de fuego en un sistema automatizado de inventario y control.', // Cambia la descripción
+        version: '1.0.0',
+      },
+      server: [{ url: `https://api-rest-fgqq.onrender.com` }], // Cambia la URL si es necesario
     },
-    server: [{ url: `https://api-rest-fgqq.onrender.com` }],
-  },
-  apis: [`${path.join(__dirname, 'index.js')}`],
-};
+    apis: [`${path.join(__dirname, 'index.js')}`],
+  };
 
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
 const customCss = `
@@ -59,8 +60,10 @@ const customCss = `
   }
 `;
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocs, {
-    customCss: customCss
+    customCss: '.swagger-ui .topbar { background-color: #4CAF50; }', // Cambia el color de la barra superior
+    customJs: '/custom-swagger.js', // Si deseas usar un archivo JavaScript personalizado
   }));
+  
 //app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocs));
 app.get('/api-spec', (req, res) => {
   res.json(swaggerDocs); // Devuelve la documentación de Swagger en formato JSON

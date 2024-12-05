@@ -5,6 +5,7 @@ const swaggerUI = require('swagger-ui-express');
 const swaggerJsDoc = require('swagger-jsdoc');
 const mysql = require('mysql2/promise'); // Usamos mysql2 para MySQL
 
+
 const app = express();
 const port = process.env.PORT || 8082;
 
@@ -32,7 +33,7 @@ async function connectToDatabase() {
 connectToDatabase();
 
 // Middleware para permitir solicitudes desde otros dominios (CORS)
-app.use(cors());
+app.use(cors({ origin: '*' }));
 app.use(express.json()); // Permite recibir datos en formato JSON
 
 // Configuración de Swagger
@@ -83,15 +84,18 @@ app.get('/api-spec', (req, res) => {
  *                     type: string
  */
 app.get('/armas', async (req, res) => {
-  try {
-    // Aquí utilizamos la conexión de mysql2
-    const [rows] = await connection.query('SELECT * FROM Armas'); // Consulta para obtener todas las armas
-    res.json(rows); // Devuelve las armas en formato JSON
-  } catch (err) {
-    console.error('Error en la consulta GET /armas:', err);
-    res.status(500).json({ message: 'Error al obtener armas' });
-  }
-});
+    try {
+      console.log('Conectando a la base de datos...');
+      const [rows] = await connection.query('SELECT * FROM Armas'); // Realiza la consulta
+      console.log('Resultado de la consulta:', rows); // Verifica qué está devolviendo la base de datos
+      res.json(rows); // Devuelve los resultados
+    } catch (err) {
+      console.error('Error en la consulta GET /armas:', err);
+      res.status(500).json({ message: 'Error al obtener armas' });
+    }
+  });
+  
+  
 
 /**
  * @swagger
@@ -308,6 +312,41 @@ app.patch('/armas/:id', async (req, res) => {
     res.status(500).json({ message: 'Error al actualizar parcialmente el arma' });
   }
 });
+
+/**
+ * @swagger
+ * /armas/{id}:
+ *   delete:
+ *     description: Eliminar un arma por ID
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         required: true
+ *         description: ID del arma a eliminar
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Arma eliminada exitosamente
+ *       404:
+ *         description: Arma no encontrada
+ */
+app.delete('/armas/:id', async (req, res) => {
+    const { id } = req.params;
+  
+    try {
+      const [rows] = await connection.query('SELECT * FROM Armas WHERE id = ?', [id]);
+      if (rows.length === 0) {
+        return res.status(404).json({ message: 'Arma no encontrada' });
+      }
+  
+      await connection.query('DELETE FROM Armas WHERE id = ?', [id]);
+      res.json({ message: 'Arma eliminada exitosamente' });
+    } catch (err) {
+      console.error('Error en la consulta DELETE /armas/:id:', err);
+      res.status(500).json({ message: 'Error al eliminar el arma' });
+    }
+  });
 
 // Iniciar el servidor
 app.listen(port, () => {

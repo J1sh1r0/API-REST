@@ -59,6 +59,10 @@ const customCss = `
     color: #FF5722; /* Color del texto del título */
   }
 `;
+app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocs, {
+    customCss: '.swagger-ui .topbar { background-color: #4CAF50; }', // Cambia el color de la barra superior
+    customJs: '/custom-swagger.js', // Si deseas usar un archivo JavaScript personalizado
+  }));
   
 //app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocs));
 app.get('/api-spec', (req, res) => {

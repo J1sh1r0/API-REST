@@ -50,7 +50,18 @@ const swaggerOptions = {
 };
 
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
-app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocs));
+const customCss = `
+  .swagger-ui .topbar {
+    background-color: #4CAF50; /* Color de fondo de la barra superior */
+  }
+  .swagger-ui .info {
+    color: #FF5722; /* Color del texto del título */
+  }
+`;
+app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocs, {
+    customCss: customCss
+  }));
+//app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocs));
 app.get('/api-spec', (req, res) => {
   res.json(swaggerDocs); // Devuelve la documentación de Swagger en formato JSON
 });

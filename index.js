@@ -48,9 +48,13 @@ const swaggerOptions = {
       server: [{ url: `https://api-rest-fgqq.onrender.com` }], // Cambia la URL si es necesario
     },
     apis: [`${path.join(__dirname, 'index.js')}`],
-  };
+};
 
-const swaggerDocs = swaggerJsDoc(swaggerOptions);
+const swaggerDocs = swaggerJsDoc(swaggerOptions);////////////////////////
+
+// Leer el README.md y mostrarlo en la documentación
+const readmeContent = fs.readFileSync(path.join(__dirname, 'README.md'), 'utf-8');
+
 const customCss = `
   .swagger-ui .topbar {
     background-color: #4CAF50; /* Color de fondo de la barra superior */
@@ -59,9 +63,18 @@ const customCss = `
     color: #FF5722; /* Color del texto del título */
   }
 `;
+// Configuración para mostrar el README en Swagger
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocs, {
-    customCss: '.swagger-ui .topbar { background-color: #4CAF50; }', // Cambia el color de la barra superior
-    customJs: '/custom-swagger.js', // Si deseas usar un archivo JavaScript personalizado
+    customCss: '.swagger-ui .topbar { background-color: #4CAF50; }', // Personaliza el color de la barra superior
+    customJs: `
+      window.onload = function() {
+        // Agregar el contenido del README al body de Swagger
+        const readmeSection = document.createElement('div');
+        readmeSection.className = 'swagger-ui-readme';
+        readmeSection.innerHTML = \`<h2>Documentación del Proyecto</h2><pre>${readmeContent.replace(/\n/g, '<br>')}</pre>\`;
+        document.querySelector('.swagger-ui').insertBefore(readmeSection, document.querySelector('.swagger-ui .topbar'));
+      };
+    `, // Este código agrega el README debajo de la barra superior
   }));
   
 //app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocs));

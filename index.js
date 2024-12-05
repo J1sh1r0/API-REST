@@ -53,7 +53,7 @@ const swaggerOptions = {
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
 const customCss = `
   .swagger-ui .topbar {
-    background-color: #4CAF50; /* Color de fondo de la barra superior */
+    background-color: #14054F; /* Color de fondo de la barra superior */
   }
   .swagger-ui .info {
     color: #FF5722; /* Color del texto del título */

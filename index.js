@@ -84,10 +84,11 @@ app.get('/api-spec', (req, res) => {
  */
 app.get('/armas', async (req, res) => {
   try {
-    const [rows] = await connection.query('SELECT * FROM Armas'); // Consulta usando mysql2
+    // Aquí utilizamos la conexión de mysql2
+    const [rows] = await connection.query('SELECT * FROM Armas'); // Consulta para obtener todas las armas
     res.json(rows); // Devuelve las armas en formato JSON
   } catch (err) {
-    console.error(err);
+    console.error('Error en la consulta GET /armas:', err);
     res.status(500).json({ message: 'Error al obtener armas' });
   }
 });
@@ -134,7 +135,7 @@ app.get('/armas/:id', async (req, res) => {
     }
     res.json(rows[0]);
   } catch (err) {
-    console.error(err);
+    console.error('Error en la consulta GET /armas/:id:', err);
     res.status(500).json({ message: 'Error al obtener arma por ID' });
   }
 });
@@ -174,7 +175,7 @@ app.post('/armas', async (req, res) => {
     );
     res.status(201).json({ message: 'Arma creada exitosamente' });
   } catch (err) {
-    console.error(err);
+    console.error('Error en la consulta POST /armas:', err);
     res.status(500).json({ message: 'Error al crear arma' });
   }
 });
@@ -230,7 +231,7 @@ app.put('/armas/:id', async (req, res) => {
     );
     res.json({ message: 'Arma actualizada exitosamente' });
   } catch (err) {
-    console.error(err);
+    console.error('Error en la consulta PUT /armas/:id:', err);
     res.status(500).json({ message: 'Error al actualizar arma' });
   }
 });
@@ -264,7 +265,7 @@ app.put('/armas/:id', async (req, res) => {
  *                 type: string
  *     responses:
  *       200:
- *         description: Arma parcialmente actualizada exitosamente
+ *         description: Arma parcialmente actualizada
  *       404:
  *         description: Arma no encontrada
  */
@@ -280,7 +281,7 @@ app.patch('/armas/:id', async (req, res) => {
 
     const updates = [];
     const params = [];
-    
+
     if (nombre) {
       updates.push('nombre = ?');
       params.push(nombre);
@@ -299,10 +300,11 @@ app.patch('/armas/:id', async (req, res) => {
     }
 
     params.push(id);
+
     await connection.query(`UPDATE Armas SET ${updates.join(', ')} WHERE id = ?`, params);
     res.json({ message: 'Arma parcialmente actualizada exitosamente' });
   } catch (err) {
-    console.error(err);
+    console.error('Error en la consulta PATCH /armas/:id:', err);
     res.status(500).json({ message: 'Error al actualizar parcialmente el arma' });
   }
 });

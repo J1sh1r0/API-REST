@@ -5,6 +5,7 @@ const swaggerUI = require('swagger-ui-express');
 const swaggerJsDoc = require('swagger-jsdoc');
 const mysql = require('mysql2/promise'); // Usamos mysql2 para MySQL
 
+
 const app = express();
 const port = process.env.PORT || 8082;
 
@@ -58,12 +59,6 @@ const customCss = `
     color: #FF5722; /* Color del texto del título */
   }
 `;
-/**
- * @swagger
- * tags:
- * - name: ARMAPEDIA
- * description: Catalogo de armas
- */
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocs, {
     customCss: '.swagger-ui .topbar { background-color: #4CAF50; }', // Cambia el color de la barra superior
     customJs: '/custom-swagger.js', // Si deseas usar un archivo JavaScript personalizado
@@ -364,7 +359,6 @@ app.delete('/armas/:id', async (req, res) => {
       res.status(500).json({ message: 'Error al eliminar el arma' });
     }
   });
-
 // Iniciar el servidor
 app.listen(port, () => {
   console.log(`Servidor Express corriendo en puerto ${port}`);

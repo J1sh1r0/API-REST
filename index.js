@@ -11,7 +11,7 @@ const port = process.env.PORT || 8082;
 // Configuración de la base de datos
 const dbConfig = {
   host: 'junction.proxy.rlwy.net',
-  user: 'root', 
+  user: 'root',
   password: 'gFBoHnyNvJoOkUqOLWqyNhtopvxayYid',
   database: 'railway',
   port: 41620,
@@ -37,23 +37,17 @@ app.use(express.json()); // Permite recibir datos en formato JSON
 
 // Configuración de Swagger
 const swaggerOptions = {
-  definition: {
-    openapi: '3.0.0',
-    info: {
-      title: 'Gestión de Armas de Fuego API',
-      description: 'API para gestionar armas de fuego en un sistema automatizado de inventario y control.',
-      version: '1.0.0',
+    definition: {
+      openapi: '3.0.0',
+      info: {
+        title: 'Gestión de Armas de Fuego API', // Cambia el título
+        description: 'API para gestionar armas de fuego en un sistema automatizado de inventario y control.', // Cambia la descripción
+        version: '1.0.0',
+      },
+      server: [{ url: `https://api-rest-fgqq.onrender.com` }], // Cambia la URL si es necesario
     },
-    server: [{ url: `https://api-rest-fgqq.onrender.com` }],
-    tags: [  // Agregar aquí los tags globales
-      {
-        name: 'Armapedia',
-        description: 'Operaciones relacionadas con las armas de fuego.',
-      }
-    ]
-  },
-  apis: [`${path.join(__dirname, 'index.js')}`],
-};
+    apis: [`${path.join(__dirname, 'index.js')}`],
+  };
 
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
 const customCss = `
@@ -64,7 +58,12 @@ const customCss = `
     color: #FF5722; /* Color del texto del título */
   }
 `;
-
+/**
+ * @swagger
+ * tags:
+ * - name: ARMAPEDIA
+ * description: Catalogo de armas
+ */
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocs, {
     customCss: '.swagger-ui .topbar { background-color: #4CAF50; }', // Cambia el color de la barra superior
     customJs: '/custom-swagger.js', // Si deseas usar un archivo JavaScript personalizado
@@ -82,7 +81,6 @@ app.get('/api-spec', (req, res) => {
  * /armas:
  *   get:
  *     description: Obtener todas las armas
- *     tags: [Armapedia]  // Aquí agregas el tag "Armapedia"
  *     responses:
  *       200:
  *         description: Lista de armas
@@ -121,7 +119,6 @@ app.get('/armas', async (req, res) => {
  * /armas/{id}:
  *   get:
  *     description: Obtener arma por ID
- *     tags: [Armapedia]  // Aquí agregas el tag
  *     parameters:
  *       - name: id
  *         in: path
@@ -132,6 +129,21 @@ app.get('/armas', async (req, res) => {
  *     responses:
  *       200:
  *         description: Arma encontrada
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: integer
+ *                 nombre:
+ *                   type: string
+ *                 calibre:
+ *                   type: string
+ *                 tipo:
+ *                   type: string
+ *                 pais_origen:
+ *                   type: string
  *       404:
  *         description: Arma no encontrada
  */

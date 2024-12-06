@@ -360,6 +360,13 @@ app.delete('/armas/:id', async (req, res) => {
     }
   });
 
+/**
+ * @swagger
+ * tags:
+ * - name: usuario
+ * description: Catalogo de usuarios
+ */
+
 // Iniciar el servidor
 app.listen(port, () => {
   console.log(`Servidor Express corriendo en puerto ${port}`);
